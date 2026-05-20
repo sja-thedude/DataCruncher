@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+begin
+  require "data_cruncher"
+rescue LoadError
+  require_relative "../lib/data_cruncher"
+end
+
+exit(DataCruncher::CLI.start(ARGV) || 0)
