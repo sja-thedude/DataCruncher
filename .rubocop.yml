@@ -1,0 +1,57 @@
+AllCops:
+  TargetRubyVersion: 3.0
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "vendor/**/*"
+    - "tmp/**/*"
+
+# Documentation lives in the README and YARD comments on public APIs.
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+
+# This codebase uses double-quoted strings consistently.
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Pragmatic limits for a data-processing library with expressive methods.
+Metrics/MethodLength:
+  Max: 30
+Metrics/AbcSize:
+  Max: 35
+Metrics/CyclomaticComplexity:
+  Max: 12
+Metrics/PerceivedComplexity:
+  Max: 12
+Metrics/ClassLength:
+  Max: 250
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "*.gemspec"
+    - "lib/data_cruncher/cli.rb" # OptionParser definition reads best as one block
+Layout/LineLength:
+  Max: 140
+
+Metrics/ParameterLists:
+  Max: 7
+
+# Keyword-rich DSL methods read better without forced guard clauses everywhere.
+Style/GuardClause:
+  Enabled: false
+Naming/MethodParameterName:
+  AllowedNames: ["o", "t", "e", "k", "v", "i", "n", "on", "to"]
+
+# Shim so `require "data-cruncher"` (the gem name) also works.
+Naming/FileName:
+  Exclude:
+    - "lib/data-cruncher.rb"
+
+# Development dependencies are declared in the gemspec (a long-standing convention).
+Gemspec/DevelopmentDependencies:
+  Enabled: false
