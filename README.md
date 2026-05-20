@@ -16,6 +16,10 @@
 [![Tests](https://img.shields.io/badge/specs-74_passing-success.svg)](spec/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg)](#-contributing)
 
+<br />
+
+<img src="docs/cli-demo.png" alt="datacruncher CLI aggregating sales data into a terminal table" width="840">
+
 </div>
 
 ---
@@ -57,12 +61,13 @@ that flows cleanly through every stage.
 | ✅ | **Validate it** | A declarative rule DSL with **row & column-level error reports** |
 | 🔀 | **Transform it** | Filter, sort, group, aggregate, **pivot tables** and SQL-style **joins** |
 | 🌐 | **Fetch it** | Pull JSON from any REST API and merge it with local data |
-| 📊 | **Report it** | Export to CSV, JSON, or a polished **terminal table** |
+| 📊 | **Report it** | Export to CSV, JSON, a polished **terminal table**, or a **PDF** |
 | 💻 | **Automate it** | A full-featured `datacruncher` CLI for the whole pipeline |
 
-- **Zero heavy runtime dependencies** — built on the standard library plus
-  [`terminal-table`](https://github.com/tj/terminal-table) and
-  [`rubyXL`](https://github.com/weshatheleopard/rubyXL).
+- **Lean dependencies** — built on the standard library plus
+  [`terminal-table`](https://github.com/tj/terminal-table),
+  [`rubyXL`](https://github.com/weshatheleopard/rubyXL) (Excel) and
+  [`prawn`](https://github.com/prawnpdf/prawn) (PDF).
 - **Chainable & immutable-friendly** — the `Cleaner` and `Transformer` never
   mutate your source data.
 - **Tested** — 74 RSpec examples and a green RuboCop run on Ruby 3.1 → 3.4.
@@ -94,6 +99,7 @@ flowchart LR
     REP --> O1[CSV export]
     REP --> O2[JSON export]
     REP --> O3[Terminal table]
+    REP --> O4[PDF export]
 
     classDef core fill:#CC342D,stroke:#7a1f1c,color:#fff;
     classDef store fill:#2d3748,stroke:#1a202c,color:#fff;
@@ -195,17 +201,9 @@ summary = DataCruncher::Transformer.new(clean)
 puts DataCruncher::Reporter.to_table(summary, title: "Sales by Region")
 ```
 
-```text
-+------------------------------------------+
-|             Sales by Region              |
-+--------+-------+------------+------------+
-| region | count | sum_amount | avg_amount |
-+--------+-------+------------+------------+
-| West   | 3     | 2250.75    | 750.25     |
-| East   | 2     | 2300.75    | 1150.375   |
-| North  | 1     | 300.0      | 300.0      |
-+--------+-------+------------+------------+
-```
+<p align="center">
+  <img src="docs/sales-by-region.png" alt="Sales by region aggregation rendered as a terminal table" width="430">
+</p>
 
 ---
 
@@ -291,13 +289,9 @@ report.to_json                # ship it to a dashboard
 puts report                   # human-readable summary ↓
 ```
 
-```text
-4 validation error(s) across 4 row(s):
-  - [row 1, column 'age'] must be >= 18
-  - [row 2, column 'email'] has invalid format
-  - [row 2, column 'status'] must be one of: active, inactive
-  - [row 3, column 'name'] is required
-```
+<p align="center">
+  <img src="docs/validation-report.png" alt="Validation report listing errors with row and column references" width="640">
+</p>
 
 ### 4️⃣ Transformer — *reshape and aggregate*
 
@@ -325,29 +319,23 @@ DataCruncher::Transformer.new(orders).merge(customers, on: "customer_id", how: :
 
 A pivot table, rendered:
 
-```text
-+---------------------------+
-|     Region x Product      |
-+--------+--------+---------+
-| region | Gadget | Widget  |
-+--------+--------+---------+
-| West   | 450.25 | 1800.5  |
-| East   | 800.0  | 1500.75 |
-| North  |        | 300.0   |
-+--------+--------+---------+
-```
+<p align="center">
+  <img src="docs/pivot-table.png" alt="Region by product pivot table" width="320">
+</p>
 
 ### 5️⃣ Reporter — *ship the results*
 
-Three output formats. Each returns a `String`, or writes to disk when given a `path:`.
+Four output formats. Each returns a `String` (or PDF binary), or writes to disk
+when given a `path:`.
 
 ```ruby
 DataCruncher::Reporter.to_csv(data, path: "out.csv")       # → "out.csv"
 DataCruncher::Reporter.to_json(data, pretty: true)         # → JSON string
 puts DataCruncher::Reporter.to_table(data, title: "Q1", limit: 20)
+DataCruncher::Reporter.to_pdf(data, path: "report.pdf", title: "Q1")  # → "report.pdf"
 
 # Or dispatch dynamically:
-DataCruncher::Reporter.render(data, format: :csv, path: "out.csv")
+DataCruncher::Reporter.render(data, format: :pdf, path: "report.pdf")
 ```
 
 ### 6️⃣ API — *pull in remote data*
@@ -400,7 +388,7 @@ Validate:
         --strict                     Exit non-zero when validation fails
 
 Report:
-        --report FORMAT              csv, json or table (default: table)
+        --report FORMAT              csv, json, table or pdf (default: table)
     -o, --output FILE                Write the report to FILE instead of stdout
         --title TITLE                Title for the terminal table
 ```
@@ -416,6 +404,9 @@ datacruncher process sales.csv --group-by region --sum amount --count --report c
 
 # Validate employees against a rules file and fail the build if invalid
 datacruncher process employees.json --validate --rules rules.rb --strict
+
+# The full pipeline, exporting a PDF report
+datacruncher process sales.csv --clean --validate --report pdf -o sales.pdf
 ```
 
 A `--rules` file is plain Ruby evaluated in the Validator DSL:
@@ -428,8 +419,9 @@ format :email, :email
 inclusion :status, in: %w[active inactive]
 ```
 
-> **Supported report formats:** `csv`, `json`, `table`. (The Reporter focuses on
-> these three; passing an unsupported format prints a friendly error.)
+> **Supported report formats:** `csv`, `json`, `table`, `pdf`. PDF output is
+> binary, so it always writes to a file (defaulting to `report.pdf` when no
+> `-o` is given). Passing an unsupported format prints a friendly error.
 
 ---
 
