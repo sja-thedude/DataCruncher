@@ -44,13 +44,27 @@ RSpec.describe DataCruncher::Reporter do
     end
   end
 
+  describe ".to_pdf" do
+    it "writes a valid PDF file" do
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "out.pdf")
+        expect(described_class.to_pdf(dataset, path: path, title: "Products")).to eq(path)
+        expect(File.binread(path, 4)).to eq("%PDF")
+      end
+    end
+
+    it "returns PDF binary data when no path is given" do
+      expect(described_class.to_pdf(dataset)[0, 4]).to eq("%PDF")
+    end
+  end
+
   describe ".render" do
     it "dispatches on the format symbol" do
       expect(described_class.render(dataset, format: :csv)).to include("name,amount")
     end
 
     it "raises for an unsupported format" do
-      expect { described_class.render(dataset, format: :pdf) }
+      expect { described_class.render(dataset, format: :xml) }
         .to raise_error(DataCruncher::UnsupportedFormatError)
     end
   end

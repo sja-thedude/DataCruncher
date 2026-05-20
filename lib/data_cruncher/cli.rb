@@ -106,8 +106,10 @@ module DataCruncher
 
     def emit_report(dataset, options)
       format = options[:report]
-      output = Reporter.render(dataset, format: format, path: options[:output], title: options[:title])
-      if options[:output]
+      # PDF is binary, so default to a file rather than dumping it to the terminal.
+      path = options[:output] || (format == :pdf ? "report.pdf" : nil)
+      output = Reporter.render(dataset, format: format, path: path, title: options[:title])
+      if path
         log options, "Wrote #{format} report to #{output}"
       else
         puts output
@@ -185,7 +187,9 @@ module DataCruncher
         o.on("--strict", "Exit non-zero when validation fails") { options[:strict] = true }
 
         o.separator "\nReport:"
-        o.on("--report FORMAT", %i[csv json table], "Output format: csv, json or table (default: table)") { |v| options[:report] = v }
+        o.on("--report FORMAT", %i[csv json table pdf], "Output format: csv, json, table or pdf (default: table)") do |v|
+          options[:report] = v
+        end
         o.on("-o", "--output FILE", "Write the report to FILE instead of stdout") { |v| options[:output] = v }
         o.on("--title TITLE", "Title for the terminal table") { |v| options[:title] = v }
 

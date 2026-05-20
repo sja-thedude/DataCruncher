@@ -60,7 +60,18 @@ RSpec.describe DataCruncher::CLI do
   end
 
   it "reports a clean OptionParser error for an invalid report format" do
-    _, status = run("process", fixture("sales.csv"), "--report", "pdf", "--quiet")
+    _, status = run("process", fixture("sales.csv"), "--report", "xml", "--quiet")
     expect(status).to eq(1)
+  end
+
+  it "writes a PDF report" do
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "report.pdf")
+      _, status = run("process", fixture("sales.csv"),
+                      "--group-by", "region", "--sum", "amount",
+                      "--report", "pdf", "-o", path, "--quiet")
+      expect(status).to eq(0)
+      expect(File.binread(path, 4)).to eq("%PDF")
+    end
   end
 end

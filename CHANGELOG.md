@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with row/column references.
 - **Transformer** — filter, sort, group, aggregate (sum/avg/count/min/max),
   pivot tables and dataset merges (inner/left/right/outer joins).
-- **Reporter** — export to CSV, JSON, and formatted terminal tables.
+- **Reporter** — export to CSV, JSON, formatted terminal tables, and PDF (via `prawn`).
 - **API** — fetch JSON from any REST endpoint and merge it with local data.
 - **CLI** — `datacruncher process` with cleaning, transform, validation and
   reporting flags.

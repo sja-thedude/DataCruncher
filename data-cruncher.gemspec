@@ -40,6 +40,8 @@ Gem::Specification.new do |spec|
 
   # `csv` ships as a bundled (no longer default) gem from Ruby 3.4 onward.
   spec.add_dependency "csv", "~> 3.3"
+  spec.add_dependency "prawn", "~> 2.5"
+  spec.add_dependency "prawn-table", "~> 0.2"
   spec.add_dependency "rubyXL", "~> 3.4"
   spec.add_dependency "terminal-table", "~> 3.0"
 
