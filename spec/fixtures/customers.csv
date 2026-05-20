@@ -1,0 +1,6 @@
+id,name,email,phone,country,signup_date
+1,  Alice Johnson ,ALICE@Example.COM,(415) 555-1234,USA,2025-01-15
+2,Bob Smith,bob@example.com,415-555-9876,,01/20/2025
+3,Bob Smith,bob@example.com,415-555-9876,,01/20/2025
+4,Carol White,carol@EXAMPLE.com,4155550000,USA,
+5, Dan Brown ,dan@example.com,+1 415 555 2222,Canada,2025-02-10

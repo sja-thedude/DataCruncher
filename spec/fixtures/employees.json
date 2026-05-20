@@ -1,0 +1,8 @@
+{
+  "employees": [
+    { "id": 101, "name": "Eve Adams",  "department": "Engineering", "age": 34, "salary": 95000,  "email": "eve@corp.com",   "status": "active" },
+    { "id": 102, "name": "Frank Lee",  "department": "Sales",       "age": 17, "salary": 40000,  "email": "frank@corp.com", "status": "active" },
+    { "id": 103, "name": "Grace Kim",  "department": "Engineering", "age": 29, "salary": 105000, "email": "grace_at_corp",  "status": "pending" },
+    { "id": 104, "name": "",           "department": "Marketing",   "age": 45, "salary": 70000,  "email": "henry@corp.com", "status": "active" }
+  ]
+}
